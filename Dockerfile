@@ -89,6 +89,6 @@ EXPOSE 8080
 # Liveness check via nginx -> local API. /api/health is a deep Redis readiness
 # check and can intentionally return 503 while the web/API process is still alive.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD wget -qO- http://localhost:8080/api/live || exit 1
+  CMD node -e "fetch('http://127.0.0.1:8080/api/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
 CMD ["/app/entrypoint.sh"]
