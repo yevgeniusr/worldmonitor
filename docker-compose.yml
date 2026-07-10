@@ -1,7 +1,7 @@
 # =============================================================================
 # World Monitor — Docker / Podman Compose
 # =============================================================================
-# Self-contained stack: app + Redis + AIS relay.
+# Self-contained stack: app + Redis.
 #
 # Quick start:
 #   cp .env.example .env        # add your API keys
@@ -28,7 +28,6 @@ services:
       LOCAL_API_PORT: "46123"
       LOCAL_API_MODE: "docker"
       LOCAL_API_CLOUD_FALLBACK: "false"
-      WS_RELAY_URL: "http://ais-relay:3004"
       # LLM provider (any OpenAI-compatible endpoint)
       LLM_API_URL: "${LLM_API_URL:-}"
       LLM_API_KEY: "${LLM_API_KEY:-}"
@@ -36,7 +35,6 @@ services:
       GROQ_API_KEY: "${GROQ_API_KEY:-}"
       OPENROUTER_API_KEY: "${OPENROUTER_API_KEY:-}"
       # Data source API keys (optional — features degrade gracefully)
-      AISSTREAM_API_KEY: "${AISSTREAM_API_KEY:-}"
       FINNHUB_API_KEY: "${FINNHUB_API_KEY:-}"
       EIA_API_KEY: "${EIA_API_KEY:-}"
       FRED_API_KEY: "${FRED_API_KEY:-}"
@@ -60,19 +58,6 @@ services:
     depends_on:
       redis-rest:
         condition: service_started
-      ais-relay:
-        condition: service_started
-    restart: unless-stopped
-
-  ais-relay:
-    build:
-      context: .
-      dockerfile: Dockerfile.relay
-    image: worldmonitor-ais-relay:latest
-    container_name: worldmonitor-ais-relay
-    environment:
-      AISSTREAM_API_KEY: "${AISSTREAM_API_KEY:-}"
-      PORT: "3004"
     restart: unless-stopped
 
   redis:
